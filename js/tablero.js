@@ -45,6 +45,8 @@ export class Tablero {
     const escala = Math.min(ancho / ANCHO, alto / ALTO);
     this.lienzo.style.width = `${Math.floor(ANCHO * escala)}px`;
     this.lienzo.style.height = `${Math.floor(ALTO * escala)}px`;
+    contenedor.style.setProperty('--lienzo-ancho', this.lienzo.style.width);
+    contenedor.style.setProperty('--lienzo-alto', this.lienzo.style.height);
   }
 
   aCoordenadasTablero(clienteX, clienteY) {

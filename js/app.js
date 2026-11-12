@@ -247,7 +247,7 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
     eventos: { hola: enviarEstado },
     alPresencia: (conteo) => {
       $('espectadores').textContent =
-        conteo.visor === 0 ? 'Nadie viendo' : conteo.visor === 1 ? '1 espectador' : `${conteo.visor} espectadores`;
+        `${conteo.visor} viendo`;
     },
     alEstado: (estadoCanal) => {
       $('estado').dataset.estado = estadoVisual(estadoCanal);
