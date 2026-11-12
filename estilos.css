@@ -11,6 +11,7 @@
   --fuente-display: 'Bricolage Grotesque', system-ui, sans-serif;
   --fuente-cuerpo: 'DM Sans', system-ui, sans-serif;
   --radio: 14px;
+  --alto-cabecera: 68px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

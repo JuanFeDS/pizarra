@@ -17,6 +17,10 @@ Herramientas de la tablet: lápiz con sensibilidad a la presión, borrador, 6 co
 - Un visor que entra tarde pide el estado completo (`hola`) y la tablet se lo reenvía. La tablet guarda sus trazos en `localStorage` por sala para sobrevivir a una recarga.
 - El código de sala es de 8 caracteres aleatorios: quien tenga el enlace puede ver la pizarra. No usar para información confidencial.
 
+## Header del sitio
+
+El header de juanfeds.com se carga con `https://juanfeds.com/shared/site-header.js` (ver `docs/header-compartido.md` en el repo del portafolio). La tool solo deja el espacio con `--alto-cabecera`.
+
 ## Desarrollo local
 
 ```bash

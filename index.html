@@ -8,16 +8,8 @@
   <meta name="description" content="Dibuja en la tablet y míralo en vivo en el computador, sin iniciar sesión en nada.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500&family=Outfit:wght@700&display=swap" rel="stylesheet">
-  <script>
-    try {
-      const guardado = localStorage.getItem('theme');
-      if (guardado === 'dark' || (!guardado && matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      }
-    } catch { /* sin almacenamiento: se queda en claro */ }
-  </script>
-  <link rel="stylesheet" href="sitio-header.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://juanfeds.com/shared/site-header.js" data-activo="tools"></script>
   <link rel="stylesheet" href="estilos.css">
 </head>
 <body data-vista="inicio">
@@ -34,34 +26,6 @@
     <symbol id="i-pantalla" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></symbol>
   </svg>
 
-  <nav class="sitio" aria-label="Sitio JuanFeDS">
-    <div class="sitio__barra">
-      <a class="sitio__logo" href="https://juanfeds.com/">🧪 JuanFe<span>DS</span></a>
-      <ul class="sitio__enlaces">
-        <li><a href="https://juanfeds.com/projects/">Proyectos</a></li>
-        <li><a href="https://juanfeds.com/tools/" aria-current="page">Tools</a></li>
-        <li><a href="https://juanfeds.com/blog/">Blog</a></li>
-        <li><a href="https://juanfeds.com/makeover-monday/">Vizs</a></li>
-        <li><a href="https://juanfeds.com/about/">Sobre mí</a></li>
-      </ul>
-      <div class="sitio__acciones">
-        <button class="sitio__boton" id="sitio-tema" type="button" aria-label="Cambiar tema">
-          <svg id="sitio-sol" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-          <svg id="sitio-luna" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        </button>
-        <button class="sitio__boton sitio__boton--menu" id="sitio-menu" type="button" aria-label="Abrir menú" aria-expanded="false">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-      </div>
-    </div>
-    <ul class="sitio__movil" id="sitio-movil" hidden>
-      <li><a href="https://juanfeds.com/projects/">Proyectos</a></li>
-      <li><a href="https://juanfeds.com/tools/" aria-current="page">Tools</a></li>
-      <li><a href="https://juanfeds.com/blog/">Blog</a></li>
-      <li><a href="https://juanfeds.com/makeover-monday/">Vizs</a></li>
-      <li><a href="https://juanfeds.com/about/">Sobre mí</a></li>
-    </ul>
-  </nav>
 
   <main class="inicio" id="inicio">
     <section class="inicio__cuerpo">
@@ -149,7 +113,6 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-  <script src="js/sitio-header.js" defer></script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
