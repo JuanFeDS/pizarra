@@ -349,7 +349,7 @@ button { cursor: pointer; }
 
 #lienzo {
   background: #fff;
-  border-radius: 6px;
+  border-radius: 20px;
   box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.06);
   touch-action: none;
   user-select: none;
