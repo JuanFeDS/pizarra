@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#14112b">
+  <title>Pizarra</title>
+  <meta name="description" content="Dibuja en la tablet y míralo en vivo en el computador, sin iniciar sesión en nada.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body data-vista="inicio">
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-lapiz" viewBox="0 0 24 24"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol>
+    <symbol id="i-borrador" viewBox="0 0 24 24"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></symbol>
+    <symbol id="i-deshacer" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+    <symbol id="i-rehacer" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></symbol>
+    <symbol id="i-basura" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol>
+    <symbol id="i-descargar" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-enlace" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+    <symbol id="i-pantalla" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></symbol>
+  </svg>
+
+  <main class="inicio" id="inicio">
+    <header class="inicio__marca">
+      <span class="logo" aria-hidden="true"></span>
+      <span>pizarra</span>
+    </header>
+
+    <section class="inicio__cuerpo">
+      <h1 class="inicio__titulo">
+        Dibuja en la <em class="c-coral">tablet</em>.<br>
+        Míralo en el <em class="c-turquesa">computador</em>.
+      </h1>
+      <p class="inicio__texto">
+        Sin iniciar sesión en nada. La tablet dibuja, el computador muestra lo mismo en vivo
+        y tú compartes esa pestaña en Teams.
+      </p>
+
+      <div class="inicio__acciones">
+        <a class="boton boton--grande" id="abrir-tablet" href="#">
+          Abrir mi pizarra
+          <span class="boton__sala" id="sala-guardada"></span>
+        </a>
+        <form class="ver" id="form-ver" autocomplete="off">
+          <input id="entrada-sala" placeholder="Código de sala" maxlength="12" aria-label="Código de sala"
+                 autocapitalize="characters" spellcheck="false">
+          <button type="submit">Ver →</button>
+        </form>
+      </div>
+
+      <ol class="pasos">
+        <li><b>Tablet</b> abre «Abrir mi pizarra»</li>
+        <li><b>Computador</b> abre el enlace de la sala</li>
+        <li><b>Teams</b> comparte esa pestaña</li>
+      </ol>
+    </section>
+
+    <svg class="inicio__firma" viewBox="0 0 640 420" aria-hidden="true">
+      <rect x="20" y="170" width="190" height="130" rx="18" class="f-tablet"/>
+      <circle cx="115" cy="285" r="4" class="f-punto"/>
+      <rect x="380" y="60" width="240" height="150" rx="12" class="f-monitor"/>
+      <path d="M470 210v38M430 252h80" class="f-pie"/>
+      <path d="M60 250c28-70 56 10 84-40s40-24 52-8" class="f-trazo f-trazo--tablet" pathLength="1"/>
+      <path d="M210 215C290 215 300 150 380 140" class="f-cable" pathLength="1"/>
+      <path d="M410 150c28-70 56 10 84-40s40-24 52-8" class="f-trazo f-trazo--monitor" pathLength="1"/>
+    </svg>
+  </main>
+
+  <main class="pizarra" id="pizarra" hidden>
+    <header class="barra" id="barra">
+      <div class="barra__sala" id="barra-sala">
+        <span class="estado" id="estado" data-estado="conectando"></span>
+        <button class="chip-sala" id="chip-sala" type="button" title="Copiar enlace del visor">
+          <span class="chip-sala__codigo" id="codigo-sala"></span>
+          <svg class="ico"><use href="#i-enlace"/></svg>
+          <span class="chip-sala__texto" id="texto-enlace">Copiar enlace</span>
+        </button>
+        <span class="espectadores" id="espectadores"></span>
+      </div>
+
+      <div class="barra__herramientas" id="herramientas">
+        <div class="grupo" role="radiogroup" aria-label="Herramienta">
+          <button class="herr" id="h-lapiz" type="button" aria-pressed="true" title="Lápiz"><svg class="ico"><use href="#i-lapiz"/></svg></button>
+          <button class="herr" id="h-borrador" type="button" aria-pressed="false" title="Borrador"><svg class="ico"><use href="#i-borrador"/></svg></button>
+        </div>
+        <div class="grupo grupo--colores" id="colores" role="radiogroup" aria-label="Color"></div>
+        <label class="grosor" title="Grosor">
+          <span class="grosor__punto" id="grosor-punto"></span>
+          <input id="grosor" type="range" min="2" max="40" step="1" value="6" aria-label="Grosor">
+        </label>
+        <div class="grupo">
+          <button class="herr" id="h-deshacer" type="button" title="Deshacer"><svg class="ico"><use href="#i-deshacer"/></svg></button>
+          <button class="herr" id="h-rehacer" type="button" title="Rehacer"><svg class="ico"><use href="#i-rehacer"/></svg></button>
+          <button class="herr herr--texto" id="h-borrar" type="button" title="Borrar todo"><svg class="ico"><use href="#i-basura"/></svg><span id="texto-borrar"></span></button>
+          <button class="herr" id="h-descargar" type="button" title="Descargar imagen"><svg class="ico"><use href="#i-descargar"/></svg></button>
+        </div>
+        <span class="lectura" id="lectura" aria-live="off"></span>
+      </div>
+
+      <div class="barra__visor" id="barra-visor">
+        <button class="herr herr--texto" id="v-descargar" type="button"><svg class="ico"><use href="#i-descargar"/></svg><span>Descargar imagen</span></button>
+        <button class="herr herr--texto" id="v-pantalla" type="button"><svg class="ico"><use href="#i-pantalla"/></svg><span>Pantalla completa</span></button>
+      </div>
+    </header>
+
+    <section class="escenario" id="escenario">
+      <canvas id="lienzo" aria-label="Pizarra"></canvas>
+      <p class="aviso" id="aviso"></p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
