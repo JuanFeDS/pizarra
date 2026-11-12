@@ -11,6 +11,15 @@ function puntoMedio(a, b) {
   return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
 }
 
+function distanciaASegmento(punto, inicio, fin) {
+  const dx = fin[0] - inicio[0];
+  const dy = fin[1] - inicio[1];
+  const largoCuadrado = dx * dx + dy * dy;
+  const proyeccion = ((punto[0] - inicio[0]) * dx + (punto[1] - inicio[1]) * dy) / (largoCuadrado || 1);
+  const fraccion = largoCuadrado === 0 ? 0 : Math.max(0, Math.min(1, proyeccion));
+  return Math.hypot(punto[0] - (inicio[0] + fraccion * dx), punto[1] - (inicio[1] + fraccion * dy));
+}
+
 export class Tablero {
   constructor(lienzo) {
     this.lienzo = lienzo;
@@ -93,6 +102,51 @@ export class Tablero {
     this.indice.delete(id);
     this.redibujar();
     return trazo;
+  }
+
+  quitarSinRedibujar(id) {
+    const posicion = this.trazos.findIndex((trazo) => trazo.id === id);
+    if (posicion === -1) return null;
+    const [trazo] = this.trazos.splice(posicion, 1);
+    this.indice.delete(id);
+    return { trazo, indice: posicion };
+  }
+
+  insertar(posicion, trazo) {
+    this.trazos.splice(posicion, 0, trazo);
+    this.indice.set(trazo.id, trazo);
+  }
+
+  trazosCerca(punto, anterior, radio) {
+    const muestras = [punto];
+    if (anterior) {
+      const largo = Math.hypot(punto[0] - anterior[0], punto[1] - anterior[1]);
+      const pasos = Math.floor(largo / 6);
+      for (let i = 1; i <= pasos; i++) {
+        const fraccion = i / (pasos + 1);
+        muestras.push([
+          anterior[0] + (punto[0] - anterior[0]) * fraccion,
+          anterior[1] + (punto[1] - anterior[1]) * fraccion,
+        ]);
+      }
+    }
+    const golpeados = [];
+    for (const trazo of this.trazos) {
+      if (trazo.borrador) continue;
+      const alcance = radio + trazo.grosor / 2;
+      const puntos = trazo.puntos;
+      const toca = muestras.some((muestra) => {
+        if (puntos.length === 1) {
+          return Math.hypot(muestra[0] - puntos[0][0], muestra[1] - puntos[0][1]) <= alcance;
+        }
+        for (let i = 1; i < puntos.length; i++) {
+          if (distanciaASegmento(muestra, puntos[i - 1], puntos[i]) <= alcance) return true;
+        }
+        return false;
+      });
+      if (toca) golpeados.push(trazo.id);
+    }
+    return golpeados;
   }
 
   vaciar() {

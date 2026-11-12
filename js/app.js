@@ -137,8 +137,9 @@ function iniciarVisor(sala, tablero, estadoPuntos, actualizarAviso) {
         if (trazo.puntos.length !== n) return pedirEstado();
         tablero.cerrar(trazo);
       },
-      deshacer: ({ id }) => {
-        tablero.quitar(id);
+      quitar: ({ ids }) => {
+        ids.forEach((id) => tablero.quitarSinRedibujar(id));
+        tablero.redibujar();
         actualizarAviso();
       },
       borrar: () => {
@@ -185,7 +186,9 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
     color: COLORES[0],
     grosor: Number(leerAlmacen('pizarra:grosor')) || 6,
   };
+  const historial = [];
   const rehacerPila = [];
+  const RADIO_BORRAR_TRAZO = 18;
   let activo = null;
   let verLapiz = false;
   let red;
@@ -214,6 +217,7 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
         const trazo = tablero.nuevoTrazo({ id, color: c, grosor: w, borrador: e });
         tablero.agregarPuntos(trazo, desaplanar(d), false);
         tablero.cerrar(trazo);
+        historial.push({ tipo: 'dibujar', trazo });
       }
     } catch {
       escribirAlmacen(claveTrazos, '[]');
@@ -254,7 +258,7 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
   const botonRehacer = $('h-rehacer');
   const botonBorrar = $('h-borrar');
   function actualizarBotones() {
-    botonDeshacer.disabled = Boolean(activo) || tablero.trazos.length === 0;
+    botonDeshacer.disabled = Boolean(activo) || historial.length === 0;
     botonRehacer.disabled = Boolean(activo) || rehacerPila.length === 0;
     botonBorrar.disabled = Boolean(activo) || tablero.trazos.length === 0;
     actualizarAviso();
@@ -296,6 +300,25 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
     }
   }
 
+  function borrarTrazosEn(eventos) {
+    const ids = [];
+    for (const evento of eventos) {
+      const punto = tablero.aCoordenadasTablero(evento.clientX, evento.clientY);
+      for (const id of tablero.trazosCerca(punto, activo.anterior, RADIO_BORRAR_TRAZO)) {
+        const quitado = tablero.quitarSinRedibujar(id);
+        if (!quitado) continue;
+        activo.quitados.push(quitado);
+        ids.push(id);
+      }
+      activo.anterior = punto;
+    }
+    if (ids.length > 0) {
+      tablero.redibujar();
+      red.enviar('quitar', { ids });
+      actualizarAviso();
+    }
+  }
+
   const lienzo = $('lienzo');
   const lectura = $('lectura');
   const nombresPuntero = { pen: 'lápiz', touch: 'dedo', mouse: 'ratón' };
@@ -306,13 +329,20 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
     if (activo) return;
     evento.preventDefault();
     lienzo.setPointerCapture(evento.pointerId);
+    if (sesion.herramienta === 'trazo') {
+      activo = { idPuntero: evento.pointerId, modo: 'borrar-trazo', quitados: [], anterior: null };
+      rehacerPila.length = 0;
+      actualizarBotones();
+      borrarTrazosEn([evento]);
+      return;
+    }
     const trazo = tablero.nuevoTrazo({
       id: nuevoId(),
       color: sesion.color,
       grosor: sesion.grosor,
       borrador: sesion.herramienta === 'borrador',
     });
-    activo = { idPuntero: evento.pointerId, trazo, temporizador: null, enviados: 0 };
+    activo = { idPuntero: evento.pointerId, modo: 'dibujar', trazo, temporizador: null, enviados: 0 };
     rehacerPila.length = 0;
     actualizarBotones();
     sumarPuntos([evento]);
@@ -324,16 +354,23 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
     }
     if (!activo || evento.pointerId !== activo.idPuntero) return;
     const lista = evento.getCoalescedEvents ? evento.getCoalescedEvents() : [];
-    sumarPuntos(lista.length > 0 ? lista : [evento]);
+    const eventos = lista.length > 0 ? lista : [evento];
+    if (activo.modo === 'borrar-trazo') borrarTrazosEn(eventos);
+    else sumarPuntos(eventos);
   });
 
   function terminarTrazo(evento) {
     if (!activo || evento.pointerId !== activo.idPuntero) return;
     const accion = activo;
-    clearTimeout(accion.temporizador);
-    tablero.cerrar(accion.trazo);
-    vaciarEnvio(accion);
-    red.enviar('fin', { id: accion.trazo.id, n: accion.trazo.puntos.length });
+    if (accion.modo === 'borrar-trazo') {
+      if (accion.quitados.length > 0) historial.push({ tipo: 'borrar', items: accion.quitados });
+    } else {
+      clearTimeout(accion.temporizador);
+      tablero.cerrar(accion.trazo);
+      vaciarEnvio(accion);
+      red.enviar('fin', { id: accion.trazo.id, n: accion.trazo.puntos.length });
+      historial.push({ tipo: 'dibujar', trazo: accion.trazo });
+    }
     activo = null;
     guardarTrazos();
     actualizarBotones();
@@ -342,27 +379,42 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
   lienzo.addEventListener('pointercancel', terminarTrazo);
 
   botonDeshacer.addEventListener('click', () => {
-    const ultimo = tablero.trazos[tablero.trazos.length - 1];
-    if (!ultimo || activo) return;
-    tablero.quitar(ultimo.id);
-    rehacerPila.push(ultimo);
-    red.enviar('deshacer', { id: ultimo.id });
+    const accion = historial.pop();
+    if (!accion || activo) return;
+    if (accion.tipo === 'dibujar') {
+      tablero.quitar(accion.trazo.id);
+      red.enviar('quitar', { ids: [accion.trazo.id] });
+    } else {
+      for (const { trazo, indice } of [...accion.items].reverse()) tablero.insertar(indice, trazo);
+      tablero.redibujar();
+      enviarEstado();
+    }
+    rehacerPila.push(accion);
     guardarTrazos();
     actualizarBotones();
   });
 
   botonRehacer.addEventListener('click', () => {
-    const trazo = rehacerPila.pop();
-    if (!trazo || activo) return;
-    const restaurado = tablero.nuevoTrazo({
-      id: trazo.id,
-      color: trazo.color,
-      grosor: trazo.grosor,
-      borrador: trazo.borrador,
-    });
-    tablero.agregarPuntos(restaurado, trazo.puntos, false);
-    tablero.cerrar(restaurado);
-    red.enviar('pts', { ...serializar(restaurado), o: 0, f: true });
+    const accion = rehacerPila.pop();
+    if (!accion || activo) return;
+    if (accion.tipo === 'dibujar') {
+      const original = accion.trazo;
+      const restaurado = tablero.nuevoTrazo({
+        id: original.id,
+        color: original.color,
+        grosor: original.grosor,
+        borrador: original.borrador,
+      });
+      tablero.agregarPuntos(restaurado, original.puntos, false);
+      tablero.cerrar(restaurado);
+      red.enviar('pts', { ...serializar(restaurado), o: 0, f: true });
+      historial.push({ tipo: 'dibujar', trazo: restaurado });
+    } else {
+      const items = accion.items.map(({ trazo }) => tablero.quitarSinRedibujar(trazo.id)).filter(Boolean);
+      tablero.redibujar();
+      red.enviar('quitar', { ids: items.map(({ trazo }) => trazo.id) });
+      historial.push({ tipo: 'borrar', items });
+    }
     guardarTrazos();
     actualizarBotones();
   });
@@ -379,6 +431,7 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
     clearTimeout(temporizadorBorrar);
     restablecerBorrar();
     tablero.vaciar();
+    historial.length = 0;
     rehacerPila.length = 0;
     red.enviar('borrar');
     guardarTrazos();
@@ -393,13 +446,16 @@ function iniciarTablet(sala, tablero, actualizarAviso) {
 
   const botonLapiz = $('h-lapiz');
   const botonBorrador = $('h-borrador');
+  const botonTrazo = $('h-trazo');
   function elegirHerramienta(nombre) {
     sesion.herramienta = nombre;
     botonLapiz.setAttribute('aria-pressed', String(nombre === 'lapiz'));
     botonBorrador.setAttribute('aria-pressed', String(nombre === 'borrador'));
+    botonTrazo.setAttribute('aria-pressed', String(nombre === 'trazo'));
   }
   botonLapiz.addEventListener('click', () => elegirHerramienta('lapiz'));
   botonBorrador.addEventListener('click', () => elegirHerramienta('borrador'));
+  botonTrazo.addEventListener('click', () => elegirHerramienta('trazo'));
 
   const contenedorColores = $('colores');
   const puntoGrosor = $('grosor-punto');

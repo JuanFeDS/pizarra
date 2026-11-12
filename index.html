@@ -25,6 +25,7 @@
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <symbol id="i-lapiz" viewBox="0 0 24 24"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol>
     <symbol id="i-borrador" viewBox="0 0 24 24"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></symbol>
+    <symbol id="i-trazo" viewBox="0 0 24 24"><path d="M3 15c3-9 5 2 8-4s5-1 6-3"/><path d="m15 15 6 6M21 15l-6 6"/></symbol>
     <symbol id="i-deshacer" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
     <symbol id="i-rehacer" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></symbol>
     <symbol id="i-basura" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol>
@@ -119,6 +120,7 @@
         <div class="grupo" role="radiogroup" aria-label="Herramienta">
           <button class="herr" id="h-lapiz" type="button" aria-pressed="true" title="Lápiz"><svg class="ico"><use href="#i-lapiz"/></svg></button>
           <button class="herr" id="h-borrador" type="button" aria-pressed="false" title="Borrador"><svg class="ico"><use href="#i-borrador"/></svg></button>
+          <button class="herr" id="h-trazo" type="button" aria-pressed="false" title="Borrar trazo completo"><svg class="ico"><use href="#i-trazo"/></svg></button>
         </div>
         <div class="grupo grupo--colores" id="colores" role="radiogroup" aria-label="Color"></div>
         <label class="grosor" title="Grosor">
