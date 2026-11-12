@@ -236,7 +236,10 @@ export function iniciarTablet({ sala, tablero, actualizarAviso }) {
   }
 
   lienzo.addEventListener('pointerdown', (evento) => {
-    if (evento.pointerType === 'pen') verLapiz = true;
+    if (evento.pointerType === 'pen') {
+      verLapiz = true;
+      gesto = null;
+    }
     if (evento.pointerType === 'mouse' && evento.button === 1) {
       evento.preventDefault();
       capturar(evento);
@@ -297,7 +300,7 @@ export function iniciarTablet({ sala, tablero, actualizarAviso }) {
     }
     if (toques.has(evento.pointerId)) {
       toques.set(evento.pointerId, [evento.clientX, evento.clientY]);
-      if (gesto && toques.size === 2) {
+      if (gesto && toques.size === 2 && !(activo && activo.tipoPuntero !== 'touch')) {
         actualizarGesto();
         return;
       }

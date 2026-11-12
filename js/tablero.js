@@ -101,6 +101,7 @@ export class Tablero {
     this.alto = 0;
     this.dpr = 1;
     this.redibujoPendiente = false;
+    this.presentacionPendiente = false;
     this.animacion = null;
     this.alCambiarVista = null;
   }
@@ -224,6 +225,15 @@ export class Tablero {
     });
   }
 
+  programarPresentacion() {
+    if (this.presentacionPendiente) return;
+    this.presentacionPendiente = true;
+    requestAnimationFrame(() => {
+      this.presentacionPendiente = false;
+      this.presentar();
+    });
+  }
+
   redibujar() {
     if (!this.tieneTamano()) return;
     this.contextoCapa.setTransform(1, 0, 0, 1, 0, 0);
@@ -299,7 +309,7 @@ export class Tablero {
     if (dibujar && this.tieneTamano()) {
       this.aplicarTransformada(this.contextoCapa);
       dibujarTramoEn(this.contextoCapa, trazo, desde);
-      this.presentar();
+      this.programarPresentacion();
     }
     return trazo.puntos.length - desde;
   }
@@ -310,7 +320,7 @@ export class Tablero {
     if (dibujar && this.tieneTamano()) {
       this.aplicarTransformada(this.contextoCapa);
       cerrarTrazoEn(this.contextoCapa, trazo);
-      this.presentar();
+      this.programarPresentacion();
     }
   }
 
