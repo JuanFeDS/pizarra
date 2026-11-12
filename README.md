@@ -10,7 +10,7 @@ Dibuja en la tablet y míralo en vivo en el computador, sin iniciar sesión en n
 
 Herramientas de la tablet: lápiz con sensibilidad a la presión, borrador de píxeles, borrador de trazo completo, 6 colores, grosor, deshacer, rehacer, borrar todo y descargar PNG.
 
-**Zoom y desplazamiento:** pellizca con dos dedos para acercar y mover el plano (rueda del ratón para zoom, botón central para mover). Los botones flotantes abajo a la derecha alejan, acercan, encajan todo el dibujo (toca el porcentaje), descargan lo que ves y ocultan las barras para ganar espacio (Esc las vuelve a mostrar). El grosor se mide en píxeles de pantalla: al acercarte, las líneas salen más finas.
+**Zoom y desplazamiento:** pellizca con dos dedos para acercar y mover el plano (rueda del ratón para zoom, botón central para mover). El botón flotante «Dibujar / Mover» cambia entre dibujar y arrastrar el lienzo con el lápiz, el dedo o el ratón. Además, cuando ya usaste el lápiz, un dedo arrastra el lienzo sin dibujar. Los botones flotantes abajo a la derecha alejan, acercan, encajan todo el dibujo (toca el porcentaje), descargan lo que ves y ocultan las barras para ganar espacio (Esc las vuelve a mostrar). El grosor se mide en píxeles de pantalla: al acercarte, las líneas salen más finas.
 
 **Visor:** sigue lo que ves en la tablet. «Ver todo» le muestra el dibujo completo y «Seguir tablet» vuelve a seguirte. Descarga todo el dibujo o solo la vista actual.
 

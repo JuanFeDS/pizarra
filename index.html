@@ -18,6 +18,7 @@
     <symbol id="i-lapiz" viewBox="0 0 24 24"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol>
     <symbol id="i-borrador" viewBox="0 0 24 24"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></symbol>
     <symbol id="i-trazo" viewBox="0 0 24 24"><path d="M3 15c3-9 5 2 8-4s5-1 6-3"/><path d="m15 15 6 6M21 15l-6 6"/></symbol>
+    <symbol id="i-mano" viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></symbol>
     <symbol id="i-imagen" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol>
     <symbol id="i-deshacer" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
     <symbol id="i-rehacer" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></symbol>
@@ -113,6 +114,7 @@
       <canvas id="lienzo" aria-label="Pizarra"></canvas>
       <p class="aviso" id="aviso"></p>
       <div class="zoom" id="zoom" role="group" aria-label="Vista">
+        <button class="zoom__boton zoom__boton--modo" id="z-mano" type="button" aria-pressed="false" title="Cambiar entre dibujar y mover el lienzo"><svg class="ico"><use href="#i-lapiz"/></svg><span>Dibujar</span></button>
         <button class="zoom__boton" id="z-menos" type="button" aria-label="Alejar" title="Alejar">−</button>
         <button class="zoom__nivel" id="z-nivel" type="button" title="Encajar todo el dibujo">100%</button>
         <button class="zoom__boton" id="z-mas" type="button" aria-label="Acercar" title="Acercar">+</button>

@@ -22,7 +22,7 @@ export function iniciarTablet({ sala, tablero, actualizarAviso }) {
   const toques = new Map();
   let activo = null;
   let gesto = null;
-  let panRaton = null;
+  let arrastre = null;
   let verLapiz = false;
   let red;
 
@@ -235,15 +235,31 @@ export function iniciarTablet({ sala, tablero, actualizarAviso }) {
     }
   }
 
+  function iniciarArrastre(evento) {
+    evento.preventDefault();
+    capturar(evento);
+    arrastre = {
+      id: evento.pointerId,
+      tipo: evento.pointerType,
+      x: evento.clientX,
+      y: evento.clientY,
+      vista: { ...tablero.vista },
+    };
+    lienzo.classList.add('arrastrando');
+  }
+
+  function finalizarArrastre() {
+    arrastre = null;
+    lienzo.classList.remove('arrastrando');
+  }
+
   lienzo.addEventListener('pointerdown', (evento) => {
     if (evento.pointerType === 'pen') {
       verLapiz = true;
       gesto = null;
     }
     if (evento.pointerType === 'mouse' && evento.button === 1) {
-      evento.preventDefault();
-      capturar(evento);
-      panRaton = { id: evento.pointerId, x: evento.clientX, y: evento.clientY, vista: { ...tablero.vista } };
+      iniciarArrastre(evento);
       return;
     }
     if (evento.pointerType === 'mouse' && evento.button !== 0) return;
@@ -251,13 +267,22 @@ export function iniciarTablet({ sala, tablero, actualizarAviso }) {
       if (activo && activo.tipoPuntero !== 'touch') return;
       toques.set(evento.pointerId, [evento.clientX, evento.clientY]);
       if (toques.size === 2) {
+        finalizarArrastre();
         abortarTrazo();
         iniciarGesto();
         return;
       }
-      if (toques.size > 2 || verLapiz || gesto) return;
+      if (toques.size > 2 || gesto) return;
+      if (verLapiz) {
+        iniciarArrastre(evento);
+        return;
+      }
     }
     if (activo) return;
+    if (sesion.herramienta === 'mano') {
+      iniciarArrastre(evento);
+      return;
+    }
     evento.preventDefault();
     capturar(evento);
     rehacerPila.length = 0;
@@ -289,12 +314,13 @@ export function iniciarTablet({ sala, tablero, actualizarAviso }) {
     if (evento.pointerType === 'pen' || evento.pointerType === 'mouse') {
       lectura.textContent = `${NOMBRES_PUNTERO[evento.pointerType]} · presión ${evento.pressure.toFixed(2)}`;
     }
-    if (panRaton && evento.pointerId === panRaton.id) {
-      const { escala } = panRaton.vista;
+    if (arrastre && evento.pointerId === arrastre.id) {
+      if (activo && activo.tipoPuntero !== arrastre.tipo) return;
+      const { escala } = arrastre.vista;
       tablero.fijarVista({
         escala,
-        x: panRaton.vista.x - (evento.clientX - panRaton.x) / escala,
-        y: panRaton.vista.y - (evento.clientY - panRaton.y) / escala,
+        x: arrastre.vista.x - (evento.clientX - arrastre.x) / escala,
+        y: arrastre.vista.y - (evento.clientY - arrastre.y) / escala,
       });
       return;
     }
@@ -313,7 +339,7 @@ export function iniciarTablet({ sala, tablero, actualizarAviso }) {
   });
 
   function terminarPuntero(evento) {
-    if (panRaton && evento.pointerId === panRaton.id) panRaton = null;
+    if (arrastre && evento.pointerId === arrastre.id) finalizarArrastre();
     toques.delete(evento.pointerId);
     if (toques.size < 2) gesto = null;
     if (!activo || evento.pointerId !== activo.idPuntero) return;
@@ -433,15 +459,22 @@ export function iniciarTablet({ sala, tablero, actualizarAviso }) {
   const botonLapiz = $('h-lapiz');
   const botonBorrador = $('h-borrador');
   const botonTrazo = $('h-trazo');
+  const botonMano = $('z-mano');
   function elegirHerramienta(nombre) {
     sesion.herramienta = nombre;
     botonLapiz.setAttribute('aria-pressed', String(nombre === 'lapiz'));
     botonBorrador.setAttribute('aria-pressed', String(nombre === 'borrador'));
     botonTrazo.setAttribute('aria-pressed', String(nombre === 'trazo'));
+    const mover = nombre === 'mano';
+    botonMano.setAttribute('aria-pressed', String(mover));
+    botonMano.querySelector('use').setAttribute('href', mover ? '#i-mano' : '#i-lapiz');
+    botonMano.querySelector('span').textContent = mover ? 'Mover' : 'Dibujar';
+    lienzo.classList.toggle('mano', mover);
   }
   botonLapiz.addEventListener('click', () => elegirHerramienta('lapiz'));
   botonBorrador.addEventListener('click', () => elegirHerramienta('borrador'));
   botonTrazo.addEventListener('click', () => elegirHerramienta('trazo'));
+  botonMano.addEventListener('click', () => elegirHerramienta(sesion.herramienta === 'mano' ? 'lapiz' : 'mano'));
 
   const contenedorColores = $('colores');
   const puntoGrosor = $('grosor-punto');
