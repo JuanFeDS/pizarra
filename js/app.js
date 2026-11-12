@@ -167,12 +167,11 @@ function iniciarVisor(sala, tablero, estadoPuntos, actualizarAviso) {
   $('texto-enlace').textContent = 'Sala';
   $('chip-sala').disabled = true;
 
-  const barra = $('barra');
   let temporizadorBarra;
   function mostrarBarra() {
-    barra.classList.remove('barra--oculta');
+    document.body.classList.remove('inactivo');
     clearTimeout(temporizadorBarra);
-    temporizadorBarra = setTimeout(() => barra.classList.add('barra--oculta'), 3500);
+    temporizadorBarra = setTimeout(() => document.body.classList.add('inactivo'), 3500);
   }
   ['pointermove', 'pointerdown', 'keydown'].forEach((nombre) => window.addEventListener(nombre, mostrarBarra));
   mostrarBarra();
